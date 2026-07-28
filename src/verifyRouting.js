@@ -73,8 +73,8 @@ const TOML_STRING_ASSIGNMENT = /^[ \t]*([A-Za-z0-9_-]+)[ \t]*=[ \t]*(?:"([^"]*)"
 /**
  * The one Codex delegation skill. The checker asserts presence only — the skill directory and its
  * SKILL.md — because the skill body is prose the design revises freely; pinning its wording here
- * would make every edit a checker change. (Absence of the three old codex-* skills it replaces is
- * the deletion contract's business, not this assertion's.)
+ * would make every edit a checker change. Nothing here asserts the absence of the three old
+ * codex-* skills it supersedes — see the note on the assertions array.
  */
 const SKILL_DIR = '.claude/skills/delegate-to-codex'
 const SKILL_FILE = `${SKILL_DIR}/SKILL.md`

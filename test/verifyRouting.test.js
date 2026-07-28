@@ -291,6 +291,8 @@ describe('the Codex config the user hand-maintains', () => {
 })
 
 describe('multiple violations at once', () => {
+  // The fixture also holds a stray `sol-high.md`, absent from the expectation below: an agent of
+  // the user's own perturbs neither the count nor the content of the real problems.
   it('collects every problem in one pass rather than short-circuiting', async () => {
     const report = await verifyRouting(fixture('multiple-violations'))
 

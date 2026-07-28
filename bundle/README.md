@@ -54,8 +54,9 @@ name no removed one. What the rest of the file says is the user's business.
 
 `.claude/skills/delegate-to-codex/` is the single model-invocable skill for starting a Codex
 session, whatever the surface — implementation, review, investigation, or runtime verification via
-the Playwright backend. It replaces the three old `codex-*` skills (their deletion at install time
-is the deletion contract's business). It absorbs the Codex CLI mechanics so they are read where
+the Playwright backend. It supersedes the three old `codex-*` skills — but installing is additive,
+so removing those is a conversation the installing session has with the user, never a checker
+failure and never a unilateral edit. It absorbs the Codex CLI mechanics so they are read where
 they are used, and names the existing `sonnet-high` agent as the wrapper for reaching Codex from a
 subagent — deliberately no dedicated Codex agent definition.
 
