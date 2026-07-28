@@ -117,17 +117,6 @@ describe('each violation in isolation', () => {
     expect(report.problems[0].detail).toContain('prompt body')
   })
 
-  it('reports an unexpected sixth agent as leftover', async () => {
-    const report = await verifyRouting(fixture('extra-agent'))
-
-    expect(report.ok).toBe(false)
-    expect(report.problems).toHaveLength(1)
-    expect(report.problems[0]).toMatchObject({
-      kind: 'leftover',
-      path: '.claude/agents/fable-low.md'
-    })
-  })
-
   it('reports a Codex config left at the wrong effort as wrong-value', async () => {
     const report = await verifyRouting(fixture('codex-wrong-effort'))
 
@@ -268,6 +257,23 @@ describe('each violation in isolation', () => {
   })
 })
 
+describe('the agents directory the user hand-maintains', () => {
+  // The fixture's own agents are deliberately nothing like the designed five — one carries a role
+  // prompt and extra frontmatter keys, one has no frontmatter at all. Installing is additive, so
+  // none of that is the checker's business.
+  it('accepts agents of the user\'s own alongside the five designed ones', async () => {
+    const report = await verifyRouting(fixture('extra-agent'))
+
+    expect(report).toEqual({ ok: true, problems: [] })
+  })
+
+  it('still reports a missing designed agent in a directory holding the user\'s own', async () => {
+    const report = await verifyRouting(fixture('extra-agent-missing-designed'))
+
+    expect(signatures(report.problems)).toEqual(['missing .claude/agents/fable-high.md'])
+  })
+})
+
 describe('the CLAUDE.md the user hand-maintains', () => {
   it('reads only the routing section — user sections around it are none of its business', async () => {
     const report = await verifyRouting(fixture('claude-md-user-sections'))
@@ -290,7 +296,6 @@ describe('multiple violations at once', () => {
 
     expect(report.ok).toBe(false)
     expect(signatures(report.problems)).toEqual([
-      'leftover .claude/agents/sol-high.md',
       'malformed .claude/agents/fable-medium.md',
       'missing .claude/agents/opus-medium.md',
       'wrong-value .claude/agents/sonnet-high.md'
@@ -299,7 +304,7 @@ describe('multiple violations at once', () => {
 
   it('covers all four problem kinds across the fixtures', async () => {
     const reports = await Promise.all(
-      ['multiple-violations', 'wrong-effort'].map((fixture_name) => verifyRouting(fixture(fixture_name)))
+      ['multiple-violations', 'wrong-effort', 'claude-md-removed-model'].map((fixture_name) => verifyRouting(fixture(fixture_name)))
     )
     const kinds = new Set(reports.flatMap((report) => report.problems).map((found) => found.kind))
 

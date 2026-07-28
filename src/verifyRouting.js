@@ -196,8 +196,12 @@ function checkAgentFile(agent_name, agent_path, file_text) {
 }
 
 /**
- * Assertion: `.claude/agents/` holds exactly the five expected agent definitions, each with valid
+ * Assertion: `.claude/agents/` holds the five expected agent definitions, each with valid
  * frontmatter pinning the designed model/effort pair and no prompt body.
+ *
+ * Only those five files are read. Installing the bundle is additive, and users legitimately keep
+ * specialised agents of their own in this directory — an unknown file there is none of the
+ * checker's business, whatever shape it is in.
  */
 async function assertAgents(install_root) {
   const agents_path = join(install_root, '.claude', 'agents')
@@ -216,20 +220,6 @@ async function assertAgents(install_root) {
 
   const problems = []
   const present_files = new Set(dir_entries.filter((entry) => entry.isFile()).map((entry) => entry.name))
-
-  for (const file_name of [...present_files].sort()) {
-    const agent_name = file_name.endsWith('.md') ? file_name.slice(0, -'.md'.length) : null
-
-    if (agent_name === null || Object.hasOwn(EXPECTED_AGENTS, agent_name)) {
-      continue
-    }
-
-    problems.push(problem(
-      PROBLEM_KINDS.LEFTOVER,
-      `${AGENTS_DIR}/${file_name}`,
-      'unexpected file in the agents directory; exactly the five designed agents belong here'
-    ))
-  }
 
   for (const agent_name of Object.keys(EXPECTED_AGENTS)) {
     const file_name = `${agent_name}.md`
@@ -423,7 +413,12 @@ async function assertDelegateSkill(install_root) {
 }
 
 /**
- * The registered assertions. The deletion contract ticket appends the leftover checks here.
+ * The registered assertions.
+ *
+ * Every one of them asks "is what the bundle owns present and correctly valued?" and nothing else.
+ * There is deliberately no assertion that some superseded file is absent: install is additive, so
+ * whatever else lives in the install root is the user's, and removing it is a conversation to have
+ * with them rather than a checker failure.
  */
 const assertions = [
   assertAgents,

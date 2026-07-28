@@ -2,6 +2,8 @@
 
 You are installing the model-routing bundle into this user's Claude Code setup. It assumes no model routing is installed yet — every step is additive. If any file below already exists, do not overwrite it; tell the user instead.
 
+If you find model-routing guidance already in place that contradicts what you are installing — an older model table, routing rules naming models the new section doesn't, a rules file the new section supersedes — raise the conflict with the user and settle it together; replace or remove their existing rules only once they have said to, never on your own initiative.
+
 1. **Clone the repo**, unless you are already inside a checkout of it:
 
    ```sh

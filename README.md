@@ -15,4 +15,6 @@ npm run verify           # node bin/verify-routing.mjs bundle
 
 `verifyRouting` is parameterised by install root, so the same checker runs against `bundle/` here, against fixture trees under `test/fixtures/`, and against a real install root later.
 
-Status: design settled 2026-07-28. Implemented: the checker (agents, routing section, delegation skill, Codex config assertions), the five agent definitions, the routing section, and `delegate-to-codex`. Deferred: the orchestration-skill rewrites and the supersession/deletion contract (CORE-86/87).
+Status: design settled 2026-07-28, bundle complete. The checker (agents, routing section, delegation skill, Codex config assertions), the five agent definitions, the routing section, and `delegate-to-codex` all ship here; the orchestration-skill rewrites (CORE-86) landed in the skills themselves.
+
+Installing is **additive**: the checker asserts only that what the bundle owns is present and correctly valued. Agents, skills and CLAUDE.md sections of the user's own are none of its business, and superseded files are removed in conversation with the user (see SETUP.md) rather than enforced by the checker.
