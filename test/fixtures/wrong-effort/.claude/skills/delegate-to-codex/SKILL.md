@@ -20,17 +20,13 @@ Much shorter and simpler than a Claude subagent prompt: one tight, self-containe
 
 Every prompt ends with: "If you find nothing, say so explicitly and state exactly what you inspected." Silence otherwise reads as failure and triggers wasteful reruns.
 
-Prompt shapes, one per surface:
+Prompt shapes:
 
 - **Implement** — "Implement <spec, with the agreed interfaces stated>. Write tests covering the new behaviour. Summarise what changed, list files touched, state how you verified it."
 - **Review** — "Review the diff from `git diff <ref>...HEAD` in this repo. Report real defects — correctness, edge cases, design, missing test coverage — not style." (`codex review <ref>` covers the branch-diff case directly.)
-- **Verify** — "Verify <flow> at <URL> by writing and running a Playwright CLI script. Screenshot each acceptance checkpoint; keep the script as a rerunnable artifact. Report observed vs expected."
+- **Verify** — "Verify <flow> at <URL> by writing and running a Playwright CLI script. Screenshot each acceptance checkpoint; keep the script as a rerunnable artifact. Report observed vs expected." Runtime and UI verification runs on the Playwright backend — no desktop needed, and the script remains a rerunnable test. Start the app yourself and hand Codex the URL; its job is exercising the flow, not guessing the launch procedure.
 
 `codex exec` does no slash-command or `?` processing. Skills fire by description matching against `~/.codex/skills/`, so word the prompt in a skill's trigger language rather than naming it as a command.
-
-## Runtime verification — the Playwright backend
-
-Verifying a running app is the same delegation with the Verify prompt shape: Codex writes and runs Playwright CLI scripts as an independent driver — no desktop, parallelisable, and the script remains as a rerunnable test. Start the app yourself and hand Codex the URL; its job is exercising the flow, not guessing the launch procedure.
 
 ## Reaching Codex from a subagent
 
