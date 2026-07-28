@@ -7,6 +7,7 @@ sit once installed, so installing is a copy and verifying is `verifyRouting('bun
 bundle/
   .claude/
     agents/          five agent definitions (CORE-82)
+    CLAUDE.md        the canonical routing section (CORE-84)
   .codex/
     config.toml      the one Codex key the bundle owns (CORE-83)
 ```
@@ -17,7 +18,6 @@ real install root later, with no special-casing.
 
 Later tickets add to this same tree:
 
-- `.claude/CLAUDE.md` — the canonical routing section (CORE-84)
 - `.claude/skills/delegate-to-codex/` — the one Codex delegation skill (CORE-85)
 
 ## Agent definitions
@@ -39,6 +39,18 @@ go stale. There is deliberately no `fable-low` (Fable at low is the interactive 
 subagent) and no Sol agent (Sol is reached by `sonnet-high` running the Codex delegation skill).
 
 The ceiling is `high`, never above.
+
+## Routing section
+
+`.claude/CLAUDE.md` is exactly the routing section — the model table, the routing doors, the
+effort rule, the human-in-the-loop line, and its own maintenance note — written generically so it
+can be handed to someone else unedited.
+
+Like the Codex config, it is **not** installed by copying over the target: a real `~/.claude/CLAUDE.md`
+holds the user's own instructions. Install adds or replaces one thing — the `## Model routing`
+section, heading to the next same-level heading — and leaves every other line untouched. The
+checker likewise reads only that section: it must be present, name all four current models, and
+name no removed one. What the rest of the file says is the user's business.
 
 ## Codex config
 

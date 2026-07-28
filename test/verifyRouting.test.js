@@ -63,6 +63,7 @@ describe('each violation in isolation', () => {
     const report = await verifyRouting(fixture('empty-root'))
 
     expect(signatures(report.problems)).toEqual([
+      'missing .claude/CLAUDE.md',
       'missing .claude/agents',
       'missing .codex/config.toml'
     ])
@@ -171,6 +172,84 @@ describe('each violation in isolation', () => {
       kind: 'malformed',
       path: '.codex/config.toml'
     })
+  })
+
+  it('reports an absent CLAUDE.md as missing', async () => {
+    const report = await verifyRouting(fixture('claude-md-missing'))
+
+    expect(report.ok).toBe(false)
+    expect(report.problems).toHaveLength(1)
+    expect(report.problems[0]).toMatchObject({
+      kind: 'missing',
+      path: '.claude/CLAUDE.md'
+    })
+  })
+
+  it('reports a CLAUDE.md without the routing section as missing', async () => {
+    const report = await verifyRouting(fixture('claude-md-no-routing-section'))
+
+    expect(report.ok).toBe(false)
+    expect(report.problems).toHaveLength(1)
+    expect(report.problems[0]).toMatchObject({
+      kind: 'missing',
+      path: '.claude/CLAUDE.md'
+    })
+    expect(report.problems[0].detail).toContain('routing section')
+  })
+
+  it('reports a routing section that never names a current model as wrong-value', async () => {
+    const report = await verifyRouting(fixture('claude-md-missing-model'))
+
+    expect(report.ok).toBe(false)
+    expect(report.problems).toHaveLength(1)
+    expect(report.problems[0]).toMatchObject({
+      kind: 'wrong-value',
+      path: '.claude/CLAUDE.md'
+    })
+    expect(report.problems[0].detail).toContain('sonnet-5')
+  })
+
+  it('reports a routing section still naming a removed model as leftover', async () => {
+    const report = await verifyRouting(fixture('claude-md-removed-model'))
+
+    expect(report.ok).toBe(false)
+    expect(report.problems).toHaveLength(1)
+    expect(report.problems[0]).toMatchObject({
+      kind: 'leftover',
+      path: '.claude/CLAUDE.md'
+    })
+    expect(report.problems[0].detail).toContain('haiku')
+  })
+
+  it('catches a removed model in a spaced, capitalised form too', async () => {
+    const report = await verifyRouting(fixture('claude-md-removed-model-variant'))
+
+    expect(report.ok).toBe(false)
+    expect(report.problems).toHaveLength(1)
+    expect(report.problems[0]).toMatchObject({
+      kind: 'leftover',
+      path: '.claude/CLAUDE.md'
+    })
+    expect(report.problems[0].detail).toContain('opus-4.8')
+  })
+
+  it('reports an unreadable CLAUDE.md as malformed, not missing', async () => {
+    const report = await verifyRouting(fixture('claude-md-unreadable'))
+
+    expect(report.ok).toBe(false)
+    expect(report.problems).toHaveLength(1)
+    expect(report.problems[0]).toMatchObject({
+      kind: 'malformed',
+      path: '.claude/CLAUDE.md'
+    })
+  })
+})
+
+describe('the CLAUDE.md the user hand-maintains', () => {
+  it('reads only the routing section — user sections around it are none of its business', async () => {
+    const report = await verifyRouting(fixture('claude-md-user-sections'))
+
+    expect(report).toEqual({ ok: true, problems: [] })
   })
 })
 

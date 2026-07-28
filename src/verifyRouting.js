@@ -42,6 +42,20 @@ const FRONTMATTER_FENCE = '---'
 const FRONTMATTER_LINE = /^([A-Za-z_][A-Za-z0-9_-]*):[ \t]*(.*)$/
 
 /**
+ * The CLAUDE.md routing section. The bundle owns exactly one section of the target CLAUDE.md —
+ * "## Model routing", heading to the next same-level heading at the start of a line — mirroring
+ * how it owns exactly one key of the Codex config. The section must name all four current models;
+ * removed models simply vanish from the design, so any of them still named is a leftover the
+ * install failed to clear. Both scans cover the section only — the rest of the file belongs to
+ * the user, and what it names is none of the checker's business.
+ */
+const CLAUDE_MD = '.claude/CLAUDE.md'
+const ROUTING_HEADING = '## Model routing'
+const ROUTING_SECTION_END = /^#{1,2} /
+const CURRENT_MODELS = Object.freeze(['gpt-5.6-sol', 'sonnet-5', 'opus-5', 'fable-5'])
+const REMOVED_MODELS = Object.freeze(['opus-4.8', 'gpt-5.5', 'gpt-5.6-terra', 'gpt-5.6-luna', 'haiku'])
+
+/**
  * The Codex config, and the one key the bundle owns in it. Codex's stated default is Sol at high;
  * a config left at anything else silently contradicts it. Every other key in that file belongs to
  * the user and is none of the checker's business — see bundle/README.md.
@@ -233,6 +247,97 @@ async function assertAgents(install_root) {
 }
 
 /**
+ * Pull the routing section out of a CLAUDE.md: the `## Model routing` heading and every line up
+ * to the next heading of the same or higher level. Deliberately not a Markdown parser — both
+ * boundaries are start-of-line headings, which is also the rule install replaces the section by.
+ * Returns `undefined` when the heading is absent.
+ */
+function extractRoutingSection(file_text) {
+  const lines = file_text.split(/\r?\n/)
+  const heading_index = lines.findIndex((line) => line.trimEnd() === ROUTING_HEADING)
+
+  if (heading_index === -1) {
+    return undefined
+  }
+
+  const section_lines = [lines[heading_index]]
+
+  for (const line of lines.slice(heading_index + 1)) {
+    if (ROUTING_SECTION_END.test(line)) {
+      break
+    }
+
+    section_lines.push(line)
+  }
+
+  return section_lines.join('\n')
+}
+
+/**
+ * Does the text name this model? Current models must appear in canonical form, so this is a plain
+ * case-insensitive substring check. For removed models "in any form" is the bar: a section saying
+ * "Opus 4.8" has kept the model just as surely as one saying "opus-4.8", so the separators are
+ * loosened to hyphen, dot, space, or nothing between the name's parts.
+ */
+function namesModel(text_lower, model_name, { any_form = false } = {}) {
+  if (!any_form) {
+    return text_lower.includes(model_name)
+  }
+
+  const name_parts = model_name.split(/[-.]/).map((part) => part.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
+  return new RegExp(name_parts.join('[-. ]?')).test(text_lower)
+}
+
+/**
+ * Assertion: `.claude/CLAUDE.md` exists, carries the routing section, and the section names all
+ * four current models and none of the removed ones.
+ */
+async function assertClaudeMd(install_root) {
+  let file_text
+
+  try {
+    file_text = await readFile(join(install_root, '.claude', 'CLAUDE.md'), 'utf8')
+  } catch (error) {
+    if (error.code === 'ENOENT' || error.code === 'ENOTDIR') {
+      return [problem(PROBLEM_KINDS.MISSING, CLAUDE_MD, 'the CLAUDE.md is missing')]
+    }
+
+    return [problem(PROBLEM_KINDS.MALFORMED, CLAUDE_MD, `the CLAUDE.md could not be read: ${error.code ?? error.message}`)]
+  }
+
+  const section_text = extractRoutingSection(file_text)
+
+  if (section_text === undefined) {
+    return [problem(PROBLEM_KINDS.MISSING, CLAUDE_MD, `the routing section is missing: no "${ROUTING_HEADING}" heading`)]
+  }
+
+  const problems = []
+  const section_lower = section_text.toLowerCase()
+
+  for (const model_name of CURRENT_MODELS) {
+    if (!namesModel(section_lower, model_name)) {
+      problems.push(problem(
+        PROBLEM_KINDS.WRONG_VALUE,
+        CLAUDE_MD,
+        `the routing section never names "${model_name}"; all four current models belong in it`
+      ))
+    }
+  }
+
+  for (const model_name of REMOVED_MODELS) {
+    if (namesModel(section_lower, model_name, { any_form: true })) {
+      problems.push(problem(
+        PROBLEM_KINDS.LEFTOVER,
+        CLAUDE_MD,
+        `the routing section still names "${model_name}"; removed models simply vanish`
+      ))
+    }
+  }
+
+  return problems
+}
+
+/**
  * Read a top-level string assignment out of a TOML file. Deliberately not a TOML parser — the
  * checker owns exactly one scalar key, and reading it is a line scan that stops at the first table
  * header so a same-named key under `[profiles.fast]` is never mistaken for the top-level one.
@@ -286,11 +391,12 @@ async function assertCodexConfig(install_root) {
 }
 
 /**
- * The registered assertions. Later tickets append here: the CLAUDE.md routing section, the
- * delegate-to-codex skill, and the leftover/deletion checks.
+ * The registered assertions. Later tickets append here: the delegate-to-codex skill and the
+ * leftover/deletion checks.
  */
 const assertions = [
   assertAgents,
+  assertClaudeMd,
   assertCodexConfig
 ]
 
