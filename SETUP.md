@@ -1,10 +1,8 @@
-# Setting up the model-routing bundle
+# Set up the model-routing bundle
 
-A prompt for a Claude Code session. Tell the agent: **"Fetch https://raw.githubusercontent.com/lukeselr/model-routing/main/SETUP.md and follow it."** It assumes you have no model routing installed yet — everything below is additive.
+You are installing the model-routing bundle into this user's Claude Code setup. It assumes no model routing is installed yet — every step is additive. If any file below already exists, do not overwrite it; tell the user instead.
 
-## Steps
-
-1. **Clone the repo.** If you are not already inside a checkout of it:
+1. **Clone the repo**, unless you are already inside a checkout of it:
 
    ```sh
    git clone https://github.com/lukeselr/model-routing.git
@@ -33,4 +31,4 @@ A prompt for a Claude Code session. Tell the agent: **"Fetch https://raw.githubu
 
    Fix anything it reports and re-run until it prints ok. It checks that everything above is present and correctly valued.
 
-Finish by listing exactly what was added and where. If any of the files above already existed, don't overwrite them — say so instead.
+Finish by listing exactly what you added and where, and anything you skipped because it already existed. Tell the user to start a fresh Claude Code session so the routing section loads.
