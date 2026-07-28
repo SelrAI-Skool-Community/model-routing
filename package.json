@@ -1,0 +1,18 @@
+{
+  "name": "model-routing",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "The model-routing bundle and the checker that verifies an install of it.",
+  "main": "src/verifyRouting.js",
+  "bin": {
+    "verify-routing": "bin/verify-routing.mjs"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "verify": "node bin/verify-routing.mjs bundle"
+  },
+  "devDependencies": {
+    "vitest": "^3.2.4"
+  }
+}
