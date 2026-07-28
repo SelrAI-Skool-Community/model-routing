@@ -41,6 +41,21 @@ const AGENTS_DIR = '.claude/agents'
 const FRONTMATTER_FENCE = '---'
 const FRONTMATTER_LINE = /^([A-Za-z_][A-Za-z0-9_-]*):[ \t]*(.*)$/
 
+/**
+ * The Codex config, and the one key the bundle owns in it. Codex's stated default is Sol at high;
+ * a config left at anything else silently contradicts it. Every other key in that file belongs to
+ * the user and is none of the checker's business — see bundle/README.md.
+ *
+ * The assignment pattern accepts both TOML string forms and a trailing comment, because this key
+ * lives in a config the user hand-maintains: `effort = 'high'  # the ceiling` is a correct config,
+ * and reporting it as wrong would be a false alarm on exactly the file we asked them to keep.
+ */
+const CODEX_CONFIG = '.codex/config.toml'
+const CODEX_EFFORT_KEY = 'model_reasoning_effort'
+const CODEX_EFFORT_VALUE = 'high'
+const TOML_TABLE_HEADER = /^[ \t]*\[/
+const TOML_STRING_ASSIGNMENT = /^[ \t]*([A-Za-z0-9_-]+)[ \t]*=[ \t]*(?:"([^"]*)"|'([^']*)')[ \t]*(?:#.*)?$/
+
 function problem(kind, path, detail) {
   return { kind, path, detail }
 }
@@ -218,11 +233,65 @@ async function assertAgents(install_root) {
 }
 
 /**
- * The registered assertions. Later tickets append here: the CLAUDE.md routing section, the Codex
- * config value, the delegate-to-codex skill, and the leftover/deletion checks.
+ * Read a top-level string assignment out of a TOML file. Deliberately not a TOML parser — the
+ * checker owns exactly one scalar key, and reading it is a line scan that stops at the first table
+ * header so a same-named key under `[profiles.fast]` is never mistaken for the top-level one.
+ *
+ * Returns the value, or `undefined` when the key is not set at the top level.
+ */
+function readTopLevelTomlString(file_text, wanted_key) {
+  for (const line of file_text.split(/\r?\n/)) {
+    if (TOML_TABLE_HEADER.test(line)) {
+      return undefined
+    }
+
+    const match = line.match(TOML_STRING_ASSIGNMENT)
+
+    if (match && match[1] === wanted_key) {
+      const [, , double_quoted, single_quoted] = match
+      return double_quoted ?? single_quoted
+    }
+  }
+
+  return undefined
+}
+
+/**
+ * Assertion: `.codex/config.toml` exists and sets `model_reasoning_effort = "high"`.
+ */
+async function assertCodexConfig(install_root) {
+  let file_text
+
+  try {
+    file_text = await readFile(join(install_root, '.codex', 'config.toml'), 'utf8')
+  } catch (error) {
+    if (error.code === 'ENOENT' || error.code === 'ENOTDIR') {
+      return [problem(PROBLEM_KINDS.MISSING, CODEX_CONFIG, 'the Codex config is missing')]
+    }
+
+    return [problem(PROBLEM_KINDS.MALFORMED, CODEX_CONFIG, `the Codex config could not be read: ${error.code ?? error.message}`)]
+  }
+
+  const actual_effort = readTopLevelTomlString(file_text, CODEX_EFFORT_KEY)
+
+  if (actual_effort === CODEX_EFFORT_VALUE) {
+    return []
+  }
+
+  return [problem(
+    PROBLEM_KINDS.WRONG_VALUE,
+    CODEX_CONFIG,
+    `${CODEX_EFFORT_KEY} should be "${CODEX_EFFORT_VALUE}", found ${actual_effort === undefined ? `no ${CODEX_EFFORT_KEY} key` : `"${actual_effort}"`}`
+  )]
+}
+
+/**
+ * The registered assertions. Later tickets append here: the CLAUDE.md routing section, the
+ * delegate-to-codex skill, and the leftover/deletion checks.
  */
 const assertions = [
-  assertAgents
+  assertAgents,
+  assertCodexConfig
 ]
 
 /**

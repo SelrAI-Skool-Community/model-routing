@@ -59,11 +59,12 @@ describe('each violation in isolation', () => {
     expect(report.problems[0]).toMatchObject({ kind: 'missing', path: '.claude/agents' })
   })
 
-  it('reports an install root with no .claude at all as a missing agents directory', async () => {
+  it('reports an install root with nothing installed as one missing per assertion', async () => {
     const report = await verifyRouting(fixture('empty-root'))
 
-    expect(report.problems).toEqual([
-      expect.objectContaining({ kind: 'missing', path: '.claude/agents' })
+    expect(signatures(report.problems)).toEqual([
+      'missing .claude/agents',
+      'missing .codex/config.toml'
     ])
   })
 
@@ -123,6 +124,61 @@ describe('each violation in isolation', () => {
       kind: 'leftover',
       path: '.claude/agents/fable-low.md'
     })
+  })
+
+  it('reports a Codex config left at the wrong effort as wrong-value', async () => {
+    const report = await verifyRouting(fixture('codex-wrong-effort'))
+
+    expect(report.ok).toBe(false)
+    expect(report.problems).toHaveLength(1)
+    expect(report.problems[0]).toMatchObject({
+      kind: 'wrong-value',
+      path: '.codex/config.toml'
+    })
+    expect(report.problems[0].detail).toContain('model_reasoning_effort')
+    expect(report.problems[0].detail).toContain('"low"')
+  })
+
+  it('reports an absent Codex config as missing', async () => {
+    const report = await verifyRouting(fixture('codex-missing-config'))
+
+    expect(report.ok).toBe(false)
+    expect(report.problems).toHaveLength(1)
+    expect(report.problems[0]).toMatchObject({
+      kind: 'missing',
+      path: '.codex/config.toml'
+    })
+  })
+
+  it('reports a Codex config that never sets the effort at the top level as wrong-value', async () => {
+    const report = await verifyRouting(fixture('codex-no-effort-key'))
+
+    expect(report.ok).toBe(false)
+    expect(report.problems).toHaveLength(1)
+    expect(report.problems[0]).toMatchObject({
+      kind: 'wrong-value',
+      path: '.codex/config.toml'
+    })
+    expect(report.problems[0].detail).toContain('no model_reasoning_effort key')
+  })
+
+  it('reports an unreadable Codex config as malformed, not missing', async () => {
+    const report = await verifyRouting(fixture('codex-unreadable-config'))
+
+    expect(report.ok).toBe(false)
+    expect(report.problems).toHaveLength(1)
+    expect(report.problems[0]).toMatchObject({
+      kind: 'malformed',
+      path: '.codex/config.toml'
+    })
+  })
+})
+
+describe('the Codex config the user hand-maintains', () => {
+  it('accepts the effort as a literal string with a trailing comment', async () => {
+    const report = await verifyRouting(fixture('codex-alternate-toml-style'))
+
+    expect(report).toEqual({ ok: true, problems: [] })
   })
 })
 

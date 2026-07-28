@@ -1,0 +1,8 @@
+# Codex CLI configuration carried by the model-routing bundle.
+#
+# The bundle owns exactly one key here: the reasoning effort Codex runs at. Installing SETS this
+# key in an existing ~/.codex/config.toml and leaves every other key alone — model, marketplaces,
+# plugins, features, MCP servers. This file is never copied over a user's config wholesale.
+#
+# high is the ceiling, never above.
+model_reasoning_effort = "high"

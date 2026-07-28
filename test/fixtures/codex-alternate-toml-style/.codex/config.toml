@@ -1,0 +1,2 @@
+# Valid TOML the checker must accept: literal string, trailing comment.
+model_reasoning_effort = 'high'  # the ceiling, never above

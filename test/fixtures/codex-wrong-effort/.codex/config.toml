@@ -1,0 +1,2 @@
+# The pre-flip value: a config that exists and parses, but contradicts the stated default.
+model_reasoning_effort = "low"

@@ -1,0 +1,6 @@
+# A config that exists but never sets the effort at the top level. The key under [profiles.fast]
+# is a different setting entirely and must not be read as the top-level one.
+model = "gpt-5.6-sol"
+
+[profiles.fast]
+model_reasoning_effort = "high"
