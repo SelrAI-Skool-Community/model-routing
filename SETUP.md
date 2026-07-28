@@ -13,7 +13,9 @@ If you find model-routing guidance already in place that contradicts what you ar
 
    Every path below that isn't under `~` is relative to this repo root.
 
-2. **Routing section.** Append the `## Model routing` section from `bundle/.claude/CLAUDE.md` to `~/.claude/CLAUDE.md` (create the file if it doesn't exist). Skip the HTML comment at the top of the bundle file — it's install guidance, not content.
+2. **Routing section.** Install the `## Model routing` section from `bundle/.claude/CLAUDE.md` into `~/.claude/CLAUDE.md` (create the file if it doesn't exist). Skip the HTML comment at the top of the bundle file — it's install guidance, not content.
+
+   If that file has no `## Model routing` section, append it. If it already has one, do **not** append a second: two sections leave a half-installed state where the older one can win, and nothing downstream will flag it. Raise the conflict with the user as above, and once they have said to, replace that section in place — from its heading to the next same-level heading — leaving every other line untouched.
 
 3. **Agent definitions.** Copy the five files from `bundle/.claude/agents/` into `~/.claude/agents/`:
    `opus-medium.md`, `opus-high.md`, `fable-medium.md`, `fable-high.md`, `sonnet-high.md`.
@@ -22,7 +24,9 @@ If you find model-routing guidance already in place that contradicts what you ar
 4. **Delegation skill.** Copy `bundle/.claude/skills/delegate-to-codex/` into `~/.claude/skills/`.
    If this machine symlinks Claude skills into `~/.codex/skills/` for Codex-side discovery, link this one the same way.
 
-5. **Codex config.** In `~/.codex/config.toml`, set `model_reasoning_effort = "high"` — set or replace that one key, leave every other key alone. If the file doesn't exist, create it from `bundle/.codex/config.toml`. (No Codex CLI on this machine? Create the file anyway; it's inert until Codex is installed.)
+5. **Codex config.** In `~/.codex/config.toml`, set `model = "gpt-5.6-sol"` and `model_reasoning_effort = "high"` — those two keys only, leaving every other key alone. Together they are the "Sol at high" default the routing section's Sol door depends on; set the effort without the model and Codex runs whatever its CLI default is, so that door reaches the wrong model.
+
+   If either key is already set to something else, treat it as a conflict rather than overwriting it: a `model` pointing at another Codex model may well be deliberate. Raise it with the user as above, and change it only once they have said to. If the file doesn't exist, create it from `bundle/.codex/config.toml`. (No Codex CLI on this machine? Create the file anyway; it's inert until Codex is installed.)
 
 6. **Verify.** From the repo root:
 
@@ -31,6 +35,6 @@ If you find model-routing guidance already in place that contradicts what you ar
    node bin/verify-routing.mjs "$HOME"
    ```
 
-   Fix anything it reports and re-run until it prints ok. It checks that everything above is present and correctly valued.
+   Fix anything it reports and re-run until it prints ok. It checks the five agent definitions, the routing section, the delegation skill, and the Codex reasoning-effort key. It does not check the Codex `model` key, so confirm that one by eye.
 
 Finish by listing exactly what you added and where, and anything you skipped because it already existed. Tell the user to start a fresh Claude Code session so the routing section loads.

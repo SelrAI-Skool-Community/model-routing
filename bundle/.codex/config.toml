@@ -1,8 +1,12 @@
 # Codex CLI configuration carried by the model-routing bundle.
 #
-# The bundle owns exactly one key here: the reasoning effort Codex runs at. Installing SETS this
-# key in an existing ~/.codex/config.toml and leaves every other key alone — model, marketplaces,
-# plugins, features, MCP servers. This file is never copied over a user's config wholesale.
+# The bundle owns exactly two keys here: the model Codex runs, and the reasoning effort it runs at.
+# Together they are the "Sol at high" default the routing section's Sol door depends on — pin the
+# effort but not the model and Codex runs whatever its CLI default is, so the door reaches the
+# wrong model. Installing SETS these two keys in an existing ~/.codex/config.toml and leaves every
+# other key alone — marketplaces, plugins, features, MCP servers. This file is never copied over a
+# user's config wholesale.
 #
 # high is the ceiling, never above.
+model = "gpt-5.6-sol"
 model_reasoning_effort = "high"

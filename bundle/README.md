@@ -11,7 +11,7 @@ bundle/
     skills/
       delegate-to-codex/   the one Codex delegation skill (CORE-85)
   .codex/
-    config.toml      the one Codex key the bundle owns (CORE-83)
+    config.toml      the two Codex keys the bundle owns (CORE-83)
 ```
 
 Repo-first, install-at-the-end: nothing here is written into a real home directory by this repo.
@@ -65,11 +65,14 @@ prose the design revises freely; pinning its wording would make every edit a che
 
 ## Codex config
 
-`.codex/config.toml` carries one key, `model_reasoning_effort = "high"`. Codex's stated default is
-Sol at high effort; a real `~/.codex/config.toml` left at `"low"` silently contradicts that, which
-is the contradiction this file exists to close.
+`.codex/config.toml` carries two keys, `model = "gpt-5.6-sol"` and `model_reasoning_effort = "high"`.
+Codex's stated default is Sol at high effort; a real `~/.codex/config.toml` left at `"low"`, or left
+on the CLI's default model, silently contradicts that — which is the contradiction this file exists
+to close. Pinning the effort alone would leave the routing section's Sol door reaching whatever
+model the CLI happens to default to.
 
 Unlike the agent definitions, this file is **not** installed by copying over the target. A real
-Codex config also holds the user's model, marketplaces, plugins, features and MCP servers. Install
-sets this one key in place and leaves the rest untouched; the checker likewise asserts only this
-key's value and says nothing about the rest of the file.
+Codex config also holds the user's marketplaces, plugins, features and MCP servers. Install sets
+these two keys in place and leaves the rest untouched. The checker asserts the effort key only:
+the model key is the user's to point elsewhere if they are deliberately running another Codex
+model, and failing an install over it would be a false alarm on a file we ask them to keep.

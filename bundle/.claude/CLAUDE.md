@@ -25,6 +25,8 @@ Scores are 1–10, higher is better. Cost reflects plan headroom, not list price
 
 **Effort.** Per-model defaults as tabled; the ceiling is `high`, never above — `xhigh`/`max` cause second-guessing loops at roughly double the cost, and effort raises thinking per step, not the number of steps. No automatic bump rule: effort is only ever raised by hand, and an agent must not compensate by reaching for a smarter model instead.
 
+**Subagents.** Five named agents pin the pairs above — `opus-medium`, `opus-high`, `fable-medium`, `fable-high`, `sonnet-high`. Spawn work by agent name: an ad-hoc subagent inherits the session's effort, which is what makes the effort column real or not. An orchestrating session can run Fable at low effort while each worker runs at its own pinned effort. There is no `fable-low` agent — Fable at low is the interactive session, never a subagent — and no Sol agent: Sol is reached by `sonnet-high` running `delegate-to-codex`.
+
 Production deploys and outbound client communications stay human-in-the-loop, regardless of what autonomy a task grants.
 
 Maintenance: a routing misjudgment appends one condensed line here; past roughly 20 lines this section is pruned, not extended.

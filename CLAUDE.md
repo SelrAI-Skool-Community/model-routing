@@ -1,6 +1,6 @@
 # model-routing
 
-Design record and implementation for the Claude/Codex model-routing methodology — which model handles which kind of work, at what reasoning effort, and how that gets enforced. See [research.md](./research.md) for the settled design.
+Implementation of the Claude/Codex model-routing methodology — which model handles which kind of work, at what reasoning effort, and how that gets enforced. The settled design lives in the bundle it produced: `bundle/.claude/CLAUDE.md` is the routing section itself, and `bundle/README.md` explains what each part of the bundle is for and why.
 
 The routing block and its agent definitions are meant to be **distributable**: written generically, with nothing business-specific in them. Keep it that way when editing.
 

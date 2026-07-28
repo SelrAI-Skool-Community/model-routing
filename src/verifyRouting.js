@@ -44,7 +44,8 @@ const FRONTMATTER_LINE = /^([A-Za-z_][A-Za-z0-9_-]*):[ \t]*(.*)$/
 /**
  * The CLAUDE.md routing section. The bundle owns exactly one section of the target CLAUDE.md —
  * "## Model routing", heading to the next same-level heading at the start of a line — mirroring
- * how it owns exactly one key of the Codex config. The section must name all four current models;
+ * how it owns named keys of the Codex config rather than the whole file. The section must name all
+ * four current models;
  * removed models simply vanish from the design, so any of them still named is a leftover the
  * install failed to clear. Both scans cover the section only — the rest of the file belongs to
  * the user, and what it names is none of the checker's business.
@@ -56,9 +57,11 @@ const CURRENT_MODELS = Object.freeze(['gpt-5.6-sol', 'sonnet-5', 'opus-5', 'fabl
 const REMOVED_MODELS = Object.freeze(['opus-4.8', 'gpt-5.5', 'gpt-5.6-terra', 'gpt-5.6-luna', 'haiku'])
 
 /**
- * The Codex config, and the one key the bundle owns in it. Codex's stated default is Sol at high;
- * a config left at anything else silently contradicts it. Every other key in that file belongs to
- * the user and is none of the checker's business — see bundle/README.md.
+ * The Codex config, and the one key of it the checker asserts. The bundle owns two keys there —
+ * `model` and `model_reasoning_effort`, together the stated "Sol at high" default — but only the
+ * effort is asserted. A user deliberately running another Codex model is a choice to raise with
+ * them, not an install failure, so pinning the model here would be a false alarm. Every other key
+ * in that file belongs to the user and is none of the checker's business — see bundle/README.md.
  *
  * The assignment pattern accepts both TOML string forms and a trailing comment, because this key
  * lives in a config the user hand-maintains: `effort = 'high'  # the ceiling` is a correct config,
