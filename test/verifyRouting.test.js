@@ -65,6 +65,7 @@ describe('each violation in isolation', () => {
     expect(signatures(report.problems)).toEqual([
       'missing .claude/CLAUDE.md',
       'missing .claude/agents',
+      'missing .claude/skills/delegate-to-codex',
       'missing .codex/config.toml'
     ])
   })
@@ -241,6 +242,28 @@ describe('each violation in isolation', () => {
     expect(report.problems[0]).toMatchObject({
       kind: 'malformed',
       path: '.claude/CLAUDE.md'
+    })
+  })
+
+  it('reports a missing delegate-to-codex skill directory once, as missing', async () => {
+    const report = await verifyRouting(fixture('skill-missing-dir'))
+
+    expect(report.ok).toBe(false)
+    expect(report.problems).toHaveLength(1)
+    expect(report.problems[0]).toMatchObject({
+      kind: 'missing',
+      path: '.claude/skills/delegate-to-codex'
+    })
+  })
+
+  it('reports a skill directory without a SKILL.md as missing', async () => {
+    const report = await verifyRouting(fixture('skill-no-skill-md'))
+
+    expect(report.ok).toBe(false)
+    expect(report.problems).toHaveLength(1)
+    expect(report.problems[0]).toMatchObject({
+      kind: 'missing',
+      path: '.claude/skills/delegate-to-codex/SKILL.md'
     })
   })
 })

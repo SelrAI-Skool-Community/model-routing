@@ -8,6 +8,8 @@ bundle/
   .claude/
     agents/          five agent definitions (CORE-82)
     CLAUDE.md        the canonical routing section (CORE-84)
+    skills/
+      delegate-to-codex/   the one Codex delegation skill (CORE-85)
   .codex/
     config.toml      the one Codex key the bundle owns (CORE-83)
 ```
@@ -15,10 +17,6 @@ bundle/
 Repo-first, install-at-the-end: nothing here is written into a real home directory by this repo.
 `verifyRouting(installRoot)` is parameterised by root, so it points at `bundle/` today and at a
 real install root later, with no special-casing.
-
-Later tickets add to this same tree:
-
-- `.claude/skills/delegate-to-codex/` — the one Codex delegation skill (CORE-85)
 
 ## Agent definitions
 
@@ -51,6 +49,18 @@ holds the user's own instructions. Install adds or replaces one thing — the `#
 section, heading to the next same-level heading — and leaves every other line untouched. The
 checker likewise reads only that section: it must be present, name all four current models, and
 name no removed one. What the rest of the file says is the user's business.
+
+## Codex delegation skill
+
+`.claude/skills/delegate-to-codex/` is the single model-invocable skill for starting a Codex
+session, whatever the surface — implementation, review, investigation, or runtime verification via
+the Playwright backend. It replaces the three old `codex-*` skills (their deletion at install time
+is the deletion contract's business). It absorbs the Codex CLI mechanics so they are read where
+they are used, and names the existing `sonnet-high` agent as the wrapper for reaching Codex from a
+subagent — deliberately no dedicated Codex agent definition.
+
+The checker asserts presence only — the directory and its `SKILL.md` — because the skill body is
+prose the design revises freely; pinning its wording would make every edit a checker change.
 
 ## Codex config
 

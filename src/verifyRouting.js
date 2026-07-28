@@ -70,6 +70,15 @@ const CODEX_EFFORT_VALUE = 'high'
 const TOML_TABLE_HEADER = /^[ \t]*\[/
 const TOML_STRING_ASSIGNMENT = /^[ \t]*([A-Za-z0-9_-]+)[ \t]*=[ \t]*(?:"([^"]*)"|'([^']*)')[ \t]*(?:#.*)?$/
 
+/**
+ * The one Codex delegation skill. The checker asserts presence only — the skill directory and its
+ * SKILL.md — because the skill body is prose the design revises freely; pinning its wording here
+ * would make every edit a checker change. (Absence of the three old codex-* skills it replaces is
+ * the deletion contract's business, not this assertion's.)
+ */
+const SKILL_DIR = '.claude/skills/delegate-to-codex'
+const SKILL_FILE = `${SKILL_DIR}/SKILL.md`
+
 function problem(kind, path, detail) {
   return { kind, path, detail }
 }
@@ -391,13 +400,36 @@ async function assertCodexConfig(install_root) {
 }
 
 /**
- * The registered assertions. Later tickets append here: the delegate-to-codex skill and the
- * leftover/deletion checks.
+ * Assertion: `.claude/skills/delegate-to-codex/` is present and holds a SKILL.md.
+ */
+async function assertDelegateSkill(install_root) {
+  const skill_dir_path = join(install_root, '.claude', 'skills', 'delegate-to-codex')
+
+  if (!(await isDirectory(skill_dir_path))) {
+    return [problem(PROBLEM_KINDS.MISSING, SKILL_DIR, 'the delegate-to-codex skill directory is missing')]
+  }
+
+  try {
+    const skill_stat = await stat(join(skill_dir_path, 'SKILL.md'))
+
+    if (skill_stat.isFile()) {
+      return []
+    }
+  } catch {
+    // fall through — an unstattable SKILL.md is a missing SKILL.md
+  }
+
+  return [problem(PROBLEM_KINDS.MISSING, SKILL_FILE, 'the skill directory has no SKILL.md')]
+}
+
+/**
+ * The registered assertions. The deletion contract ticket appends the leftover checks here.
  */
 const assertions = [
   assertAgents,
   assertClaudeMd,
-  assertCodexConfig
+  assertCodexConfig,
+  assertDelegateSkill
 ]
 
 /**
