@@ -1,6 +1,6 @@
 # Issue tracker: Linear
 
-Issues and PRDs for this repo live in **Linear**, not GitHub Issues. The GitHub remote (`lukeselr/model-routing`) is for code only — never open a GitHub issue for this repo.
+Issues and PRDs for this repo live in **Linear**, not GitHub Issues. The GitHub remote (`Mr-heka/model-routing`) is for code only — never open a GitHub issue for this repo.
 
 - **Team:** Core Builds (key `CORE`, so issue identifiers look like `CORE-123`)
 - **Project:** the internal tracker project — everything from this repo lands in this project unless the maintainer says otherwise.

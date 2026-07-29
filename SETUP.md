@@ -7,7 +7,7 @@ If you find model-routing guidance already in place that contradicts what you ar
 1. **Clone the repo**, unless you are already inside a checkout of it:
 
    ```sh
-   git clone https://github.com/lukeselr/model-routing.git
+   git clone https://github.com/Mr-heka/model-routing.git
    cd model-routing
    ```
 
