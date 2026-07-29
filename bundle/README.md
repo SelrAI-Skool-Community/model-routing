@@ -6,12 +6,12 @@ sit once installed, so installing is a copy and verifying is `verifyRouting('bun
 ```
 bundle/
   .claude/
-    agents/          five agent definitions (CORE-82)
-    CLAUDE.md        the canonical routing section (CORE-84)
+    agents/          five agent definitions
+    CLAUDE.md        the canonical routing section
     skills/
-      delegate-to-codex/   the one Codex delegation skill (CORE-85)
+      delegate-to-codex/   the one Codex delegation skill
   .codex/
-    config.toml      the two Codex keys the bundle owns (CORE-83)
+    config.toml      the two Codex keys the bundle owns
 ```
 
 Repo-first, install-at-the-end: nothing here is written into a real home directory by this repo.
