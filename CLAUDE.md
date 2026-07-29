@@ -6,10 +6,6 @@ The routing block and its agent definitions are meant to be **distributable**: w
 
 ## Agent skills
 
-### Issue tracker
-
-Linear — Core Builds team, project named in the gitignored `docs/agents/tracker-project.local.md`, reached via the Linear MCP. Not GitHub Issues. See `docs/agents/issue-tracker.md`.
-
 ### Triage labels
 
 The five canonical roles, each label string equal to its name (`needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`). See `docs/agents/triage-labels.md`.
