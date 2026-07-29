@@ -3,7 +3,7 @@
 Issues and PRDs for this repo live in **Linear**, not GitHub Issues. The GitHub remote (`luke-heka/model-routing`) is for code only — never open a GitHub issue for this repo.
 
 - **Team:** Core Builds (key `CORE`, so issue identifiers look like `CORE-123`)
-- **Project:** the internal tracker project — everything from this repo lands in this project unless the maintainer says otherwise.
+- **Project:** the tracker project named in `docs/agents/tracker-project.local.md` (gitignored — the maintainer keeps the concrete project name there so it stays out of the public repo). If that file is missing, ask the maintainer for the project name once and write it there; never guess a project and never file project-less issues.
 
 ## Access
 
@@ -18,7 +18,7 @@ There is no Linear CLI configured for this repo.
 
 ## When a skill says "publish to the issue tracker"
 
-Create a Linear issue in the Core Builds team, in the internal tracker project (see above). Put the skill's document body in the issue description, and use the document's own title as the issue title.
+Create a Linear issue in the Core Builds team, in the tracker project resolved above (from `tracker-project.local.md`). Put the skill's document body in the issue description, and use the document's own title as the issue title.
 
 ## When a skill says "fetch the relevant ticket"
 
@@ -26,7 +26,7 @@ Fetch the Linear issue by its identifier (e.g. `CORE-123`) or URL, including its
 
 ## Conventions
 
-- **Create**: a Linear issue with team = Core Builds, project = the internal tracker project, plus the triage label the skill asks for.
+- **Create**: a Linear issue with team = Core Builds, project = the one from `tracker-project.local.md`, plus the triage label the skill asks for.
 - **Read**: fetch the issue with its comments and labels.
 - **List for triage**: query the project's issues, filtered by triage label and state.
 - **Comment**: add a Linear comment on the issue.

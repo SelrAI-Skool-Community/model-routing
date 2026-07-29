@@ -8,7 +8,7 @@ The routing block and its agent definitions are meant to be **distributable**: w
 
 ### Issue tracker
 
-Linear — Core Builds team, internal tracker project, reached via the Linear MCP. Not GitHub Issues. See `docs/agents/issue-tracker.md`.
+Linear — Core Builds team, project named in the gitignored `docs/agents/tracker-project.local.md`, reached via the Linear MCP. Not GitHub Issues. See `docs/agents/issue-tracker.md`.
 
 ### Triage labels
 
