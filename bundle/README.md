@@ -26,11 +26,16 @@ like the default general-purpose agent.
 
 | agent | model | effort |
 |---|---|---|
-| `opus-medium` | opus-5 | medium |
-| `opus-high` | opus-5 | high |
-| `fable-medium` | fable-5 | medium |
-| `fable-high` | fable-5 | high |
-| `sonnet-high` | sonnet-5 | high |
+| `opus-medium` | claude-opus-5 | medium |
+| `opus-high` | claude-opus-5 | high |
+| `fable-medium` | claude-fable-5 | medium |
+| `fable-high` | claude-fable-5 | high |
+| `sonnet-high` | claude-sonnet-5 | high |
+
+The `model` value is the full Claude model ID, `claude-` prefix included. Claude Code resolves the
+frontmatter `model:` key against real model IDs (or bare aliases like `opus`); the short names the
+routing section uses in prose — `opus-5`, `fable-5`, `sonnet-5` — are not valid there, and an agent
+pinned to one fails on every spawn with "There's an issue with the selected model".
 
 Names are model + effort deliberately, never roles — roles would bake routing into agent files and
 go stale. There is deliberately no `fable-low` (Fable at low is the interactive session, never a

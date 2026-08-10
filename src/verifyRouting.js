@@ -21,13 +21,18 @@ export const PROBLEM_KINDS = Object.freeze({
   WRONG_VALUE: 'wrong-value'
 })
 
-/** The five agent definitions, and the model/effort pair each one pins. */
+/**
+ * The five agent definitions, and the model/effort pair each one pins. The `model` value must be
+ * a full Claude model ID (`claude-` prefix): Claude Code resolves frontmatter `model:` against
+ * real model IDs or bare aliases (`opus`), and a short name like `opus-5` fails every spawn with
+ * "There's an issue with the selected model". Short names stay in the routing-section prose only.
+ */
 export const EXPECTED_AGENTS = Object.freeze({
-  'opus-medium': { model: 'opus-5', effort: 'medium' },
-  'opus-high': { model: 'opus-5', effort: 'high' },
-  'fable-medium': { model: 'fable-5', effort: 'medium' },
-  'fable-high': { model: 'fable-5', effort: 'high' },
-  'sonnet-high': { model: 'sonnet-5', effort: 'high' }
+  'opus-medium': { model: 'claude-opus-5', effort: 'medium' },
+  'opus-high': { model: 'claude-opus-5', effort: 'high' },
+  'fable-medium': { model: 'claude-fable-5', effort: 'medium' },
+  'fable-high': { model: 'claude-fable-5', effort: 'high' },
+  'sonnet-high': { model: 'claude-sonnet-5', effort: 'high' }
 })
 
 /**
