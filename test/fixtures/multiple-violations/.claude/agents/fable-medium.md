@@ -1,2 +1,2 @@
 name: fable-medium
-model: fable-5
+model: claude-fable-5

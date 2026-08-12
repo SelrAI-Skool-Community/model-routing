@@ -1,7 +1,7 @@
 ---
 name: my-custom-agent
 description: A specialised agent of the user's own, with a role and a prompt body.
-model: opus-5
+model: claude-opus-5
 tools: All tools
 ---
 
